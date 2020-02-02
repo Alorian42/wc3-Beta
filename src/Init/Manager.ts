@@ -1,47 +1,34 @@
 import { MapPlayer, Unit } from 'w3ts';
+import MPlayer from '../Class/MPlayer';
+import MGame from '../Class/MGame';
 
 export default class InitManager {
+    private game!: MGame;
     private startHeroes: Array<Unit> = [];
-    private startHeroesLocation: location = Location(-6663, 8650);
 
-    private players: Array<player> = [];
-    private mapPlayers: Array<MapPlayer> = [];
     private goodAI: MapPlayer = MapPlayer.fromIndex(8);
     constructor() {
         
     }
 
     public run() {
-        this.setupPlayers();
+        this.initGame();
         this.heroesToChose();
     }
 
-    private setupPlayers() {
-        this.players = [
-            Player(0),
-            Player(1),
-            Player(2),
-            Player(3),
-            Player(4),
-            Player(5),
-            Player(6),
-            Player(7),
-        ];
+    private initGame() {
 
-        this.mapPlayers = [
-            MapPlayer.fromIndex(0),
-            MapPlayer.fromIndex(1),
-            MapPlayer.fromIndex(2),
-            MapPlayer.fromIndex(3),
-            MapPlayer.fromIndex(4),
-            MapPlayer.fromIndex(5),
-            MapPlayer.fromIndex(6),
-            MapPlayer.fromIndex(7),
+        const players = [
+            new MPlayer(MapPlayer.fromIndex(0), Player(0), Location(-6663, 8650)),
+            new MPlayer(MapPlayer.fromIndex(1), Player(1), Location(-6663, 8650)),
+            new MPlayer(MapPlayer.fromIndex(2), Player(2), Location(-6663, 8650)),
+            new MPlayer(MapPlayer.fromIndex(3), Player(3), Location(-6663, 8650)),
+            new MPlayer(MapPlayer.fromIndex(4), Player(4), Location(-6663, 8650)),
+            new MPlayer(MapPlayer.fromIndex(5), Player(5), Location(-6663, 8650)),
+            new MPlayer(MapPlayer.fromIndex(6), Player(6), Location(-6663, 8650)),
+            new MPlayer(MapPlayer.fromIndex(7), Player(7), Location(-6663, 8650)),
         ]
-
-        this.players.forEach(player => {
-            PanCameraToLocForPlayer(player, this.startHeroesLocation);
-        });
+        this.game = new MGame(players);
     }
 
     private heroesToChose(): void {
@@ -66,14 +53,18 @@ export default class InitManager {
     private heroesToChoseTriggers(): void {
         const trigger = CreateTrigger();
         
-        this.players.forEach(player => {
-            TriggerRegisterPlayerSelectionEventBJ(trigger, player, true);
+        this.game.players.forEach(player => {
+            TriggerRegisterPlayerSelectionEventBJ(trigger, player.player, true);
         });
         TriggerAddCondition(trigger, Condition(() => {
             const startUnits = this.startHeroes.map(hero => {
                 return hero.handle;
             });
-            return startUnits.indexOf(GetTriggerUnit()) !== -1;
+
+            const player = this.game.getTriggerMPlayer();
+            const isHeroSelected = player && player.isHeroSelected();
+
+            return startUnits.indexOf(GetTriggerUnit()) !== -1 && !isHeroSelected;
         }));
         TriggerAddAction(trigger, () => {
             print(`You picked ${GetHeroProperName(GetTriggerUnit())}`);
@@ -87,10 +78,10 @@ export default class InitManager {
                 });
             
             if (unit) {
-                const player = MapPlayer.fromHandle(GetTriggerPlayer());;
-                const newUnit = new Unit(player, GetUnitTypeId(unit), 0, 0, 270);
-                newUnit.nameProper = player.name;
-                newUnit.name = GetUnitName(unit);
+                const player = this.game.getTriggerMPlayer();
+                if (player) {
+                    player.selectHero(unit);
+                }
             }
         });
     }
