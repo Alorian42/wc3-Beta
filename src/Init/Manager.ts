@@ -51,38 +51,42 @@ export default class InitManager {
     }
 
     private heroesToChoseTriggers(): void {
-        const trigger = CreateTrigger();
+        
         
         this.game.players.forEach(player => {
+            const trigger = CreateTrigger();
             TriggerRegisterPlayerSelectionEventBJ(trigger, player.player, true);
-        });
-        TriggerAddCondition(trigger, Condition(() => {
-            const startUnits = this.startHeroes.map(hero => {
-                return hero.handle;
-            });
-
-            const player = this.game.getTriggerMPlayer();
-            const isHeroSelected = player && player.isHeroSelected();
-
-            return startUnits.indexOf(GetTriggerUnit()) !== -1 && !isHeroSelected;
-        }));
-        TriggerAddAction(trigger, () => {
-            print(`You picked ${GetHeroProperName(GetTriggerUnit())}`);
-
-            const unit = this.startHeroes
-                .map(hero => {
+            TriggerAddCondition(trigger, Condition(() => {
+                const startUnits = this.startHeroes.map(hero => {
                     return hero.handle;
-                })
-                .find(hero => {
-                    return hero === GetTriggerUnit();
                 });
-            
-            if (unit) {
+    
                 const player = this.game.getTriggerMPlayer();
-                if (player) {
-                    player.selectHero(unit);
+                const isHeroSelected = player && player.isHeroSelected();
+    
+                return startUnits.indexOf(GetTriggerUnit()) !== -1 && !isHeroSelected;
+            }));
+            TriggerAddAction(trigger, () => {
+                print(`You picked ${GetHeroProperName(GetTriggerUnit())}`);
+    
+                const unit = this.startHeroes
+                    .map(hero => {
+                        return hero.handle;
+                    })
+                    .find(hero => {
+                        return hero === GetTriggerUnit();
+                    });
+                
+                if (unit) {
+                    const player = this.game.getTriggerMPlayer();
+                    if (player) {
+                        player.selectHero(unit);
+                    }
                 }
-            }
+
+                DisableTrigger(trigger);
+            });
         });
+        
     }
 }
