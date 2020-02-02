@@ -18,28 +18,58 @@ STRING 4
 TriggerHappy
 }
 
-STRING 5
+STRING 17
 {
-Player 1
+NPC
 }
 
-STRING 6
+STRING 18
 {
-Player 2
+Evil
 }
 
-STRING 7
+STRING 19
 {
-Player 3
+Heroes
 }
 
-STRING 8
+STRING 20
 {
-Force 1
+Hero 1
 }
 
-STRING 9
+STRING 21
 {
-Force 2
+Hero 2
+}
+
+STRING 22
+{
+Hero 3
+}
+
+STRING 23
+{
+Hero 4
+}
+
+STRING 24
+{
+Hero 5
+}
+
+STRING 25
+{
+Hero 6
+}
+
+STRING 26
+{
+Hero 7
+}
+
+STRING 27
+{
+Hero 8
 }
 
